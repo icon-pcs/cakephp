@@ -122,7 +122,7 @@ class ModelWriteTest extends BaseModelTest {
 
 /**
  * Test save() failing when there is no data.
- *
+ *AllMdel
  * @return void
  */
 	public function testInsertNoData() {

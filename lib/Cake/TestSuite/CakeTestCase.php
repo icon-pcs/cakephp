@@ -28,6 +28,11 @@ App::uses('CakeTestFixture', 'TestSuite/Fixture');
  */
 abstract class CakeTestCase extends \PHPUnit\Framework\TestCase {
 
+	/**
+	 * @var null|DataSource
+	 */
+	public $db = null;
+
 /**
  * The class responsible for managing the creation, loading and removing of fixtures
  *
@@ -80,38 +85,13 @@ abstract class CakeTestCase extends \PHPUnit\Framework\TestCase {
 	public function run(TestResult $result = null): TestResult {
 		$level = ob_get_level();
 
-		if (!empty($this->fixtureManager)) {
-			$this->fixtureManager->load($this);
-		}
 		$result = parent::run($result);
-		if (!empty($this->fixtureManager)) {
-			$this->fixtureManager->unload($this);
-			unset($this->fixtureManager, $this->db);
-		}
 
 		for ($i = ob_get_level(); $i < $level; ++$i) {
 			ob_start();
 		}
 
 		return $result;
-	}
-
-/**
- * Called when a test case method is about to start (to be overridden when needed.)
- *
- * @param string $method Test method about to get executed.
- * @return void
- */
-	public function startTest($method) {
-	}
-
-/**
- * Called when a test case method has been executed (to be overridden when needed.)
- *
- * @param string $method Test method about that was executed.
- * @return void
- */
-	public function endTest($method) {
 	}
 
 /**
@@ -138,6 +118,12 @@ abstract class CakeTestCase extends \PHPUnit\Framework\TestCase {
 	public function setUp() {
 		parent::setUp();
 
+		if (!empty($this->fixtures)) {
+			$this->fixtureManager = $this->fixtureManager ?? CakeFixtureManager::getInstance();
+			$this->fixtureManager->fixturize($this);
+			$this->fixtureManager->load($this);
+		}
+
 		if (empty($this->_configure)) {
 			$this->_configure = Configure::read();
 		}
@@ -156,6 +142,12 @@ abstract class CakeTestCase extends \PHPUnit\Framework\TestCase {
  */
 	public function tearDown() {
 		parent::tearDown();
+
+		if (!empty($this->fixtureManager)) {
+			$this->fixtureManager->unload($this);
+			unset($this->fixtureManager, $this->db);
+		}
+
 		App::build($this->_pathRestore, App::RESET);
 		if (class_exists('ClassRegistry', false)) {
 			ClassRegistry::flush();
@@ -170,39 +162,27 @@ abstract class CakeTestCase extends \PHPUnit\Framework\TestCase {
 		unset($this->_configure, $this->_pathRestore);
 	}
 
+	/**
+	 * Sets a static timestamp
+	 *
+	 * @param bool $reset to set new static timestamp.
+	 * @return int timestamp
+	 */
+	public static function time($reset = false) {
+		static $now;
+		if ($reset || !$now) {
+			$now = time();
+		}
+		return $now;
+	}
+
 /**
- * See CakeTestSuiteDispatcher::date()
- *
  * @param string $format format to be used.
  * @return string
  */
 	public static function date($format = 'Y-m-d H:i:s') {
-		return CakeTestSuiteDispatcher::date($format);
+		return date($format, static::time());
 	}
-
-// @codingStandardsIgnoreStart PHPUnit overrides don't match CakePHP
-
-/**
- * Announces the start of a test.
- *
- * @return void
- */
-	protected function assertPreConditions() {
-		parent::assertPreConditions();
-		$this->startTest($this->getName());
-	}
-
-/**
- * Announces the end of a test.
- *
- * @return void
- */
-	protected function assertPostConditions() {
-		parent::assertPostConditions();
-		$this->endTest($this->getName());
-	}
-
-// @codingStandardsIgnoreEnd
 
 /**
  * Chooses which fixtures to load for a given test
