@@ -28,9 +28,9 @@ App::uses('CakeTestFixture', 'TestSuite/Fixture');
  */
 abstract class CakeTestCase extends \PHPUnit\Framework\TestCase {
 
-	/**
-	 * @var null|DataSource
-	 */
+/**
+ * @var null|DataSource
+ */
 	public $db = null;
 
 /**
@@ -72,27 +72,6 @@ abstract class CakeTestCase extends \PHPUnit\Framework\TestCase {
  * @var array
  */
 	protected $_pathRestore = array();
-
-/**
- * Runs the test case and collects the results in a TestResult object.
- * If no TestResult object is passed a new one will be created.
- * This method is run for each test method in this class
- *
- * @param TestResult $result The test result object
- * @return TestResult
- * @throws InvalidArgumentException
- */
-	public function run(TestResult $result = null): TestResult {
-		$level = ob_get_level();
-
-		$result = parent::run($result);
-
-		for ($i = ob_get_level(); $i < $level; ++$i) {
-			ob_start();
-		}
-
-		return $result;
-	}
 
 /**
  * Overrides SimpleTestCase::skipIf to provide a boolean return value
