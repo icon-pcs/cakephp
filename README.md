@@ -31,13 +31,13 @@ There are currently `4035` tests in the suite. This is useful to know when upgra
 SQLite:
 ```
 OK, but incomplete, skipped, or risky tests!
-Tests: 4035, Assertions: 20487, Skipped: 319.
+Tests: 4028, Assertions: 20383, Skipped: 320.
 ```
 
 MYSQL:
 ```
 OK, but incomplete, skipped, or risky tests!
-Tests: 4035, Assertions: 20157, Skipped: 192.
+Tests: 4028, Assertions: 21228, Skipped: 193.
 ```
 
 Run the tests in a CentOS VM. You will need the following in addition to our basic PHP set-up.
