@@ -125,6 +125,9 @@ class DataSourceTest extends CakeTestCase {
 			array('create', 'read', 'update', 'delete')
 		);
 
+		// the subsequent call to ConnectionManager::create()
+		// results in a call to new {classname}
+		// so we need to tell the autoloader where it can find TestSource
 		App::build([
 			"Model/Datasource" => __DIR__,
 		]);
