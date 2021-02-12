@@ -453,7 +453,7 @@ class ConfigureTest extends CakeTestCase {
 	 * @throws \PHPUnit\Framework\Error\Error
 	 */
 	public function testReaderExceptionOnIncorrectClass() {
-		$this->expectException(\PHPUnit\Framework\Error\Error::class);
+		$this->expectError();
 		$reader = new StdClass();
 
 		try {

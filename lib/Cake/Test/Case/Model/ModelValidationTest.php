@@ -775,7 +775,7 @@ class ModelValidationTest extends BaseModelTest {
 	 * @return void
 	 */
 	public function testMissingValidationErrorTriggering() {
-		$this->expectException(\PHPUnit\Framework\Error\Error::class);
+		$this->expectError();
 		Configure::write('debug', 2);
 
 		$TestModel = new ValidationTest1();
@@ -2230,7 +2230,7 @@ class ModelValidationTest extends BaseModelTest {
 	 * @throws \PHPUnit\Framework\Error\Error
 	 */
 	public function testValidatorTypehintException() {
-		$this->expectException(\PHPUnit\Framework\Error\Error::class);
+		$this->expectError();
 		try {
 			new ModelValidator('asdasds');
 			$this->fail('No exeption raised');

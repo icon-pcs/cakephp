@@ -51,7 +51,7 @@ class ControllerAuthorizeTest extends CakeTestCase {
 	 * @throws \PHPUnit\Framework\Error\Error
 	 */
 	public function testControllerTypeError() {
-		$this->expectException(\PHPUnit\Framework\Error\Error::class);
+		$this->expectError();
 		try {
 			$this->auth->controller(new StdClass());
 			$this->fail('No exception thrown');
