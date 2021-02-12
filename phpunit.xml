@@ -3,7 +3,7 @@
 		 backupGlobals="true"
 		 colors="true"
 		 stderr="true"
-		 stopOnFailure="true"
+		 stopOnFailure="false"
 >
 	<testsuites>
 		<testsuite name="CakePHP test suite">
