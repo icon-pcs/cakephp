@@ -67,8 +67,9 @@ class ErrorHandlerTest extends CakeTestCase {
 		Router::setRequestInfo($request);
 		Configure::write('debug', 2);
 
-		CakeLog::disable('stdout');
-		CakeLog::disable('stderr');
+		$configuredLoggers = CakeLog::configured();
+		in_array("stdout", $configuredLoggers) ? CakeLog::disable('stdout') : null;
+		in_array("stderr", $configuredLoggers) ? CakeLog::disable('stderr') : null;
 	}
 
 /**
@@ -81,8 +82,10 @@ class ErrorHandlerTest extends CakeTestCase {
 		if ($this->_restoreError) {
 			restore_error_handler();
 		}
-		CakeLog::enable('stdout');
-		CakeLog::enable('stderr');
+
+		$configuredLoggers = CakeLog::configured();
+		in_array("stdout", $configuredLoggers) ? CakeLog::enable('stdout') : null;
+		in_array("stderr", $configuredLoggers) ? CakeLog::enable('stderr') : null;
 	}
 
 /**
@@ -100,9 +103,13 @@ class ErrorHandlerTest extends CakeTestCase {
 		$wrong .= '';
 		$result = ob_get_clean();
 
+		$errorLevel = PHP_VERSION_ID >= 80000
+			? "Warning"
+			: "Notice";
+
 		$this->assertRegExp('/<pre class="cake-error">/', $result);
-		$this->assertRegExp('/<b>Notice<\/b>/', $result);
-		$this->assertRegExp('/variable:\s+wrong/', $result);
+		$this->assertRegExp("/<b>{$errorLevel}<\\/b>/", $result);
+		$this->assertRegExp('/variable:?\s+\$?wrong/', $result);
 	}
 
 /**
@@ -168,12 +175,13 @@ class ErrorHandlerTest extends CakeTestCase {
 		set_error_handler('ErrorHandler::handleError');
 		$this->_restoreError = true;
 
-		$out .= '';
+		trigger_error("This is a notice", E_USER_NOTICE);
 
 		$result = file(LOGS . 'debug.log');
-		$this->assertEquals(1, count($result));
+		self::assertNotFalse($result, "Call to file() returned false, couldn't read lines from debug.log");
+		self::assertCount(1, $result);
 		$this->assertRegExp(
-			'/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} (Notice|Debug): Notice \(8\): Undefined variable:\s+out in \[.+ line \d+\]$/',
+			"/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} Notice: Notice \(" . E_USER_NOTICE . "\): This is a notice in \[.+ line \d+\]$/",
 			$result[0]
 		);
 		if (file_exists(LOGS . 'debug.log')) {
@@ -196,11 +204,12 @@ class ErrorHandlerTest extends CakeTestCase {
 		set_error_handler('ErrorHandler::handleError');
 		$this->_restoreError = true;
 
-		$out .= '';
+		trigger_error("This is a notice", E_USER_NOTICE);
 
 		$result = file(LOGS . 'debug.log');
+		self::assertNotFalse($result, "Call to file() returned false, couldn't read lines from debug.log");
 		$this->assertRegExp(
-			'/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} (Notice|Debug): Notice \(8\): Undefined variable:\s+out in \[.+ line \d+\]$/',
+			'/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} (Notice): Notice \('.E_USER_NOTICE.'\): This is a notice in \[.+ line \d+\]$/',
 			$result[0]
 		);
 		$this->assertRegExp('/^Trace:/', $result[1]);

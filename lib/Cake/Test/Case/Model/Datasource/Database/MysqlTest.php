@@ -357,111 +357,6 @@ class MysqlTest extends CakeTestCase {
 	}
 
 /**
- * MySQL 4.x returns index data in a different format,
- * Using a mock ensure that MySQL 4.x output is properly parsed.
- *
- * @group indices
- * @return void
- */
-	public function testIndexOnMySQL4Output() {
-		$name = $this->Dbo->fullTableName('simple');
-
-		$mockDbo = $this->getMock('Mysql', array('connect', '_execute', 'getVersion'));
-		$columnData = array(
-			array('0' => array(
-				'Table' => 'with_compound_keys',
-				'Non_unique' => '0',
-				'Key_name' => 'PRIMARY',
-				'Seq_in_index' => '1',
-				'Column_name' => 'id',
-				'Collation' => 'A',
-				'Cardinality' => '0',
-				'Sub_part' => null,
-				'Packed' => null,
-				'Null' => '',
-				'Index_type' => 'BTREE',
-				'Comment' => ''
-			)),
-			array('0' => array(
-				'Table' => 'with_compound_keys',
-				'Non_unique' => '1',
-				'Key_name' => 'pointless_bool',
-				'Seq_in_index' => '1',
-				'Column_name' => 'bool',
-				'Collation' => 'A',
-				'Cardinality' => null,
-				'Sub_part' => null,
-				'Packed' => null,
-				'Null' => 'YES',
-				'Index_type' => 'BTREE',
-				'Comment' => ''
-			)),
-			array('0' => array(
-				'Table' => 'with_compound_keys',
-				'Non_unique' => '1',
-				'Key_name' => 'pointless_small_int',
-				'Seq_in_index' => '1',
-				'Column_name' => 'small_int',
-				'Collation' => 'A',
-				'Cardinality' => null,
-				'Sub_part' => null,
-				'Packed' => null,
-				'Null' => 'YES',
-				'Index_type' => 'BTREE',
-				'Comment' => ''
-			)),
-			array('0' => array(
-				'Table' => 'with_compound_keys',
-				'Non_unique' => '1',
-				'Key_name' => 'one_way',
-				'Seq_in_index' => '1',
-				'Column_name' => 'bool',
-				'Collation' => 'A',
-				'Cardinality' => null,
-				'Sub_part' => null,
-				'Packed' => null,
-				'Null' => 'YES',
-				'Index_type' => 'BTREE',
-				'Comment' => ''
-			)),
-			array('0' => array(
-				'Table' => 'with_compound_keys',
-				'Non_unique' => '1',
-				'Key_name' => 'one_way',
-				'Seq_in_index' => '2',
-				'Column_name' => 'small_int',
-				'Collation' => 'A',
-				'Cardinality' => null,
-				'Sub_part' => null,
-				'Packed' => null,
-				'Null' => 'YES',
-				'Index_type' => 'BTREE',
-				'Comment' => ''
-			))
-		);
-
-		$mockDbo->expects($this->once())->method('getVersion')->will($this->returnValue('4.1'));
-		$resultMock = $this->getMock('PDOStatement', array('fetch'));
-		$mockDbo->expects($this->once())
-			->method('_execute')
-			->with('SHOW INDEX FROM ' . $name)
-			->will($this->returnValue($resultMock));
-
-		foreach ($columnData as $i => $data) {
-			$resultMock->expects($this->at($i))->method('fetch')->will($this->returnValue((object)$data));
-		}
-
-		$result = $mockDbo->index($name, false);
-		$expected = array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1),
-			'pointless_bool' => array('column' => 'bool', 'unique' => 0),
-			'pointless_small_int' => array('column' => 'small_int', 'unique' => 0),
-			'one_way' => array('column' => array('bool', 'small_int'), 'unique' => 0),
-		);
-		$this->assertEquals($expected, $result);
-	}
-
-/**
  * testColumn method
  *
  * @return void
@@ -906,7 +801,7 @@ SQL;
  * @return void
  */
 	public function testDescribeHandleCurrentTimestampDatetime() {
-		$mysqlVersion = $this->Dbo->query('SELECT VERSION() as version', array('log' => false));
+		$mysqlVersion = $this->Dbo->query('SELECT VERSION() as version', [], array('log' => false));
 		$this->skipIf(version_compare($mysqlVersion[0][0]['version'], '5.6.0', '<'));
 
 		$name = $this->Dbo->fullTableName('timestamp_default_values');

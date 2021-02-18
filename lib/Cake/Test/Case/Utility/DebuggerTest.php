@@ -113,8 +113,12 @@ class DebuggerTest extends CakeTestCase {
 		$out .= '';
 		$result = Debugger::output(true);
 
-		$this->assertEquals('Notice', $result[0]['error']);
-		$this->assertRegExp('/Undefined variable\:\s+out/', $result[0]['description']);
+		$errorLevel = version_compare(PHP_VERSION, '8.0.0', '>=')
+			? "Warning"
+			: "Notice";
+
+		$this->assertEquals("{$errorLevel}", $result[0]['error']);
+		$this->assertRegExp('/Undefined variable\:?\s+\$?out/', $result[0]['description']);
 		$this->assertRegExp('/DebuggerTest::testOutput/i', $result[0]['trace']);
 
 		ob_start();
@@ -122,8 +126,11 @@ class DebuggerTest extends CakeTestCase {
 		$other .= '';
 		$result = ob_get_clean();
 
-		$this->assertRegExp('/Undefined variable:\s+other/', $result);
-		$this->assertRegExp('/Context:/', $result);
+		$this->assertRegExp('/Undefined variable:?\s+\$?other/', $result);
+
+		if (version_compare(PHP_VERSION, "8.0.0", "<")) {
+			$this->assertRegExp('/Context:/', $result);
+		}
 		$this->assertRegExp('/DebuggerTest::testOutput/i', $result);
 
 		ob_start();
@@ -131,13 +138,23 @@ class DebuggerTest extends CakeTestCase {
 		$wrong .= '';
 		$result = ob_get_clean();
 		$this->assertRegExp('/<pre class="cake-error">.+<\/pre>/', $result);
-		$this->assertRegExp('/<b>Notice<\/b>/', $result);
-		$this->assertRegExp('/variable:\s+wrong/', $result);
+
+		$errorLevel = version_compare(PHP_VERSION, '8.0.0', '>=')
+			? "Warning"
+			: "Notice";
+
+		$this->assertRegExp("/<b>{$errorLevel}<\\/b>/", $result);
+		$this->assertRegExp('/variable:?\s+\$?wrong/', $result);
 
 		ob_start();
 		Debugger::output('js');
 		$buzz .= '';
 		$result = explode('</a>', ob_get_clean());
+
+		$errorLevelNumber = version_compare(PHP_VERSION, '8.0.0', '>=')
+			? E_WARNING
+			: E_NOTICE;
+
 		$this->assertTags($result[0], array(
 			'pre' => array('class' => 'cake-error'),
 			'a' => array(
@@ -146,13 +163,16 @@ class DebuggerTest extends CakeTestCase {
 					"\(document\.getElementById\('cakeErr[a-z0-9]+\-trace'\)\.style\.display == 'none'" .
 					" \? '' \: 'none'\);/"
 			),
-			'b' => array(), 'Notice', '/b', ' (8)',
+			'b' => array(), $errorLevel, '/b', " ({$errorLevelNumber})",
 		));
 
-		$this->assertRegExp('/Undefined variable:\s+buzz/', $result[1]);
+		$this->assertRegExp('/Undefined variable:?\s+\$?buzz/', $result[1]);
 		$this->assertRegExp('/<a[^>]+>Code/', $result[1]);
 		$this->assertRegExp('/<a[^>]+>Context/', $result[2]);
-		$this->assertStringContainsString('$wrong = &#039;&#039;', $result[3], 'Context should be HTML escaped.');
+
+		if (version_compare(PHP_VERSION, '8.0.0', '<')) {
+			$this->assertStringContainsString('$wrong = &#039;&#039;', $result[3], 'Context should be HTML escaped.');
+		}
 	}
 
 /**
@@ -201,12 +221,18 @@ class DebuggerTest extends CakeTestCase {
 		$foo .= '';
 		$result = ob_get_clean();
 
+		$errorLevelNumber = version_compare(PHP_VERSION, '8.0.0', '>=')
+			? E_WARNING
+			: E_NOTICE;
+
+		// the line number that the undefined variable $foo appears on
+		$lineNumber = 221;
 		$data = array(
 			'error' => array(),
-			'code' => array(), '8', '/code',
+			'code' => array(), (string)$errorLevelNumber, '/code',
 			'file' => array(), 'preg:/[^<]+/', '/file',
-			'line' => array(), '' . ((int)__LINE__ - 7), '/line',
-			'preg:/Undefined variable:\s+foo/',
+			'line' => array(), '' . $lineNumber, '/line',
+			'preg:/Undefined variable:?\s+\$?foo/',
 			'/error'
 		);
 		$this->assertTags($result, $data, true);
@@ -260,12 +286,19 @@ class DebuggerTest extends CakeTestCase {
 		$foo .= '';
 		$result = ob_get_clean();
 
+		$errorLevelNumber = version_compare(PHP_VERSION, '8.0.0', '>=')
+			? E_WARNING
+			: E_NOTICE;
+
+		// the line number that the undefined variable $foo appears on
+		$lineNumber = 286;
+
 		$data = array(
 			'<error',
-			'<code', '8', '/code',
+			'<code', (string)$errorLevelNumber, '/code',
 			'<file', 'preg:/[^<]+/', '/file',
-			'<line', '' . ((int)__LINE__ - 7), '/line',
-			'preg:/Undefined variable:\s+foo/',
+			'<line', '' . $lineNumber, '/line',
+			'preg:/Undefined variable:?\s+\$?foo/',
 			'/error'
 		);
 		$this->assertTags($result, $data, true);
@@ -286,7 +319,12 @@ class DebuggerTest extends CakeTestCase {
 		ob_start();
 		$foo .= '';
 		$result = ob_get_clean();
-		$this->assertStringContainsString('Notice: I eated an error', $result);
+
+		$errorLevel = version_compare(PHP_VERSION, '8.0.0', '>=')
+			? "Warning"
+			: "Notice";
+
+		$this->assertStringContainsString("{$errorLevel}: I eated an error", $result);
 		$this->assertStringContainsString('DebuggerTest.php', $result);
 	}
 

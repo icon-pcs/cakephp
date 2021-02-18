@@ -119,7 +119,7 @@ class ErrorHandler {
 
 		$renderer = isset($config['renderer']) ? $config['renderer'] : 'ExceptionRenderer';
 		if ($renderer !== 'ExceptionRenderer') {
-			list($plugin, $renderer) = pluginSplit($renderer, true);
+			[$plugin, $renderer] = pluginSplit($renderer, true);
 			App::uses($renderer, $plugin . 'Error');
 		}
 		try {
@@ -204,10 +204,20 @@ class ErrorHandler {
  * @return bool true if error was handled
  */
 	public static function handleError($code, $description, $file = null, $line = null, $context = null) {
-		if (error_reporting() === 0) {
+
+		/**
+		 * The @ operator will no longer silence fatal errors
+		 * (E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR,
+		 * E_RECOVERABLE_ERROR, E_PARSE). Error handlers that
+		 * expect error_reporting to be 0 when @ is used,
+		 * should be adjusted to use a mask check instead:
+		 * @see https://www.php.net/manual/en/migration80.incompatible.php
+		 */
+		if (!(error_reporting() & $code)) {
 			return false;
 		}
-		list($error, $log) = static::mapErrorCode($code);
+
+		[$error, $log] = static::mapErrorCode($code);
 		if ($log === LOG_ERR) {
 			return static::handleFatalError($code, $description, $file, $line);
 		}

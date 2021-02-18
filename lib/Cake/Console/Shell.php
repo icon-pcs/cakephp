@@ -420,7 +420,7 @@ class Shell extends CakeObject {
  */
 	public function runCommand($command, $argv) {
 		$isTask = $this->hasTask($command);
-		$isMethod = $this->hasMethod($command);
+		$isMethod = $command !== null && $this->hasMethod($command);
 		$isMain = $this->hasMethod('main');
 
 		if ($isTask || $isMethod && $command !== 'execute') {

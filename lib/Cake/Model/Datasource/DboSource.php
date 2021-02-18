@@ -394,8 +394,18 @@ class DboSource extends DataSource {
 				if (is_float($data)) {
 					return str_replace(',', '.', strval($data));
 				}
+
+				$isNumeric = is_numeric($data);
+
+				// as of PHP8, numeric strings with leading and/or trailing whitespace are considered
+			    // numeric by PHP. we want to NOT consider these numeric because they need to be quoted
+				// for PDO purposes
+				if (is_string($data) && trim($data) !== $data) {
+					$isNumeric = false;
+				}
+
 				if (((is_int($data) || $data === '0') || (
-					is_numeric($data) &&
+					$isNumeric &&
 					strpos($data, ',') === false &&
 					$data[0] != '0' &&
 					strpos($data, 'e') === false)
@@ -567,6 +577,10 @@ class DboSource extends DataSource {
 /**
  * DataSource Query abstraction
  *
+ * @param string $sql The SQL to pass to DboSource::fetchAll()
+ * @param array|bool|null $params Either parameters to be bound as values for the SQL statement,
+ *  or a boolean to control query caching.
+ * @param array $options additional options for the query.
  * @return resource Result resource identifier.
  */
 	public function query() {

@@ -253,12 +253,13 @@ class CakeFixtureManager {
 
 		foreach ($fixtures as $f) {
 			if (!empty($this->_loaded[$f])) {
+				/** @var CakeTestFixture $fixture */
 				$fixture = $this->_loaded[$f];
+				/** @var DboSource $db */
 				$db = ConnectionManager::getDataSource($fixture->useDbConfig);
-				$db->begin();
+
 				$this->_setupTable($fixture, $db, $test->dropTables);
 				$fixture->insert($db);
-				$db->commit();
 			}
 		}
 	}

@@ -767,6 +767,19 @@ class PaginatorHelper extends AppHelper {
 		);
 		$out = '';
 
+		/** @var string|int|null $modulus */
+		/** @var string|int $first */
+		/** @var string|int $last */
+		/** @var string $before */
+		/** @var string $after */
+		/** @var string $tag */
+		/** @var string $separator */
+		/** @var string $ellipsis */
+		/** @var string $ellipsis */
+		/** @var string|null $class */
+		/** @var string|null $currentClass */
+		/** @var string|null $currentTag */
+
 		if ($modulus && $params['pageCount'] > $modulus) {
 			$half = (int)($modulus / 2);
 			$end = $params['page'] + $half;
@@ -784,9 +797,20 @@ class PaginatorHelper extends AppHelper {
 			if ($first && $start > 1) {
 				$offset = ($start <= $firstPage) ? $start - 1 : $first;
 				if ($firstPage < $start - 1) {
-					$out .= $this->first($offset, compact('tag', 'separator', 'ellipsis', 'class'));
+					$out .= $this->first($offset, [
+						'tag' => $tag,
+						'separator' => $separator,
+						'ellipsis' => $ellipsis,
+						'class' => $class,
+					]);
 				} else {
-					$out .= $this->first($offset, compact('tag', 'separator', 'class', 'ellipsis') + array('after' => $separator));
+					$out .= $this->first($offset, [
+						'tag' => $tag,
+						'separator' => $separator,
+						'ellipsis' => $ellipsis,
+						'class' => $class,
+						'after' => $separator,
+					]);
 				}
 			}
 
@@ -822,10 +846,21 @@ class PaginatorHelper extends AppHelper {
 			if ($last && $end < $params['pageCount']) {
 				$lastPage = is_int($last) ? $last : 0;
 				$offset = ($params['pageCount'] < $end + $lastPage) ? $params['pageCount'] - $end : $last;
-				if ($offset <= $lastPage && $params['pageCount'] - $end > $lastPage) {
-					$out .= $this->last($offset, compact('tag', 'separator', 'ellipsis', 'class'));
+				if ((int)$offset <= $lastPage && $params['pageCount'] - $end > $lastPage) {
+					$out .= $this->last($offset, [
+						'tag' => $tag,
+						'separator' => $separator,
+						'ellipsis' => $ellipsis,
+						'class' => $class,
+					]);
 				} else {
-					$out .= $this->last($offset, compact('tag', 'separator', 'class', 'ellipsis') + array('before' => $separator));
+					$out .= $this->last($offset, [
+						'tag' => $tag,
+						'separator' => $separator,
+						'ellipsis' => $ellipsis,
+						'class' => $class,
+						'before' => $separator,
+					]);
 				}
 			}
 
