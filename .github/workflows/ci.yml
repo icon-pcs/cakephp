@@ -20,6 +20,7 @@ jobs:
       CI: 1
 
     strategy:
+      fail-fast: false
       matrix:
         php-version:
           - "7.3"
