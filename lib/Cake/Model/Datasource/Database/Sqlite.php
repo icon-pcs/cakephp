@@ -118,7 +118,6 @@ class Sqlite extends DboSource {
 			$this->_connection = new PDO('sqlite:' . $config['database'], null, null, $flags);
 			$this->connected = true;
 		} catch(PDOException $e) {
-			throw $e;
 			throw new MissingConnectionException(array(
 				'class' => get_class($this),
 				'message' => $e->getMessage()
