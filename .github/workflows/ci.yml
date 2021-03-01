@@ -9,6 +9,12 @@ jobs:
     env:
       CI: 1
 
+    strategy:
+      matrix:
+        php-version:
+          - "7.3"
+          - "7.4"
+
     steps:
       - uses: actions/checkout@v2
 
@@ -21,21 +27,12 @@ jobs:
       - name: Tmp dir permissions
         run: chmod -R 777 ./app/tmp
 
-      - name: Composer install
-        uses: php-actions/composer@v5
+      - name: "Install PHP"
+        uses: shivammathur/setup-php@v2
         with:
-          php_version: 7.3
-          version: 2
-          command: composer install --prefer-dist
-
-      - name: Run PHPUnit (7.3)
-        uses: php-actions/composer@v5
-        with:
-          php_version: 7.3
-          command: php vendor/bin/phpunit
-
-      - name: Run PHPUnit (7.4)
-        uses: php-actions/composer@v5
-        with:
-          php_version: 7.4
-          command: php vendor/bin/phpunit
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+      - name: "Composer install"
+        run: "composer install --prefer-dist"
+      - name: "Run PHPUnit"
+        run: "vendors/bin/phpunit"
