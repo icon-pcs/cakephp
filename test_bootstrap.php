@@ -1,16 +1,21 @@
 <?php
 
-exec(__DIR__ . "/fixturize_tmp_dir");
-
 ini_set("memory_limit", "512M");
 
-/**
- * Cake doesn't have a way of configuring the path to the temp directory,
- * so we have to set this constant before it can. We need to change the
- * temp directory to be a folder which is not shared with the host OS,
- * or the permissions-related tests will not pass.
- */
-define("TMP", "/home/vagrant/caketmp/");
+$isCI = isset($_SERVER["CI"]) && $_SERVER["CI"] === "1";
+
+if (!$isCI) {
+	exec(__DIR__ . "/fixturize_tmp_dir");
+
+	/**
+	 * Cake doesn't have a way of configuring the path to the temp directory,
+	 * so we have to set this constant before it can. We need to change the
+	 * temp directory to be a folder which is not shared with the host OS,
+	 * or the permissions-related tests will not pass.
+	 */
+	define("TMP", "/home/vagrant/caketmp/");
+}
+
 
 // other constants that need to be in place during a test run
 // which were previously set by the shell bootstrap process
