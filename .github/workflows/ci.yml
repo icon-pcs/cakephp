@@ -6,6 +6,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: test
+        ports:
+          - 33306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     env:
       CI: 1
 
@@ -33,8 +43,9 @@ jobs:
           private \$identities = array(
           'mysql' => array(
           'datasource' => 'Database/Mysql',
-          'host' => '127.0.0.1',
-          'login' => 'root'
+          'host' => 'mysql',
+          'login' => 'test',
+          'password' => 'password',
           ),
           'pgsql' => array(
           'datasource' => 'Database/Postgres',
@@ -53,8 +64,8 @@ jobs:
           'database' => array(
           'default' => ':memory:',
           'test' => ':memory:',
-          'test2' => '/tmp/cakephp_test2.db',
-          'test_database_three' => '/tmp/cakephp_test3.db'
+          'test2' => __DIR__ . '/../tmp/cakephp_test2.db',
+          'test_database_three' => __DIR__ . '/../tmp/cakephp_test3.db'
           ),
           )
           );
@@ -115,5 +126,9 @@ jobs:
           php-version: "${{ matrix.php-version }}"
       - name: "Composer install"
         run: "composer install --prefer-dist"
-      - name: "Run PHPUnit"
+      - name: "Run PHPUnit (SQLite)"
+        run: "vendors/bin/phpunit"
+      - name: "Run PHPUnit (MySQL)"
+        env:
+          DB: mysql
         run: "vendors/bin/phpunit"
