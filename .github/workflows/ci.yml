@@ -125,6 +125,7 @@ jobs:
         with:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
+          extensions: ["mcrypt"]
       - name: "Composer install"
         run: "composer install --prefer-dist"
       - name: "Run PHPUnit (SQLite)"
