@@ -11,7 +11,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: php-actions/composer@v5
 
       - name: Add German locale
         run: sudo locale-gen de_DE
@@ -23,17 +22,20 @@ jobs:
         run: chmod -R 777 ./app/tmp
 
       - name: Composer install
+      - uses: php-actions/composer@v5
         with:
           php_version: 7.3
           version: 2
-          run: composer install --prefer-dist
+          command: composer install --prefer-dist
 
       - name: Run PHPUnit (7.3)
+      - uses: php-actions/composer@v5
         with:
           php_version: 7.3
-          run: php vendor/bin/phpunit
+          command: php vendor/bin/phpunit
 
       - name: Run PHPUnit (7.4)
+      - uses: php-actions/composer@v5
         with:
           php_version: 7.4
-          run: php vendor/bin/phpunit
+          command: php vendor/bin/phpunit
