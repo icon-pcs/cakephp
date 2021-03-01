@@ -22,7 +22,7 @@ jobs:
         run: chmod -R 777 ./app/tmp
 
       - name: Composer install
-        run: composer install --prefer-dist
+        run: composer install --prefer-dist --ignore-platform-reqs
 
       - name: Run PHPUnit (7.3)
         run: php7.3 vendor/bin/phpunit
