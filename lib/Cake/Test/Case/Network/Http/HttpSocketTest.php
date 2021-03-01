@@ -1840,7 +1840,7 @@ class HttpSocketTest extends CakeTestCase {
 		$this->skipIf(!extension_loaded('openssl'), 'OpenSSL is not enabled cannot test SSL.');
 		$socket = new HttpSocket();
 
-		if ($_SERVER["http_proxy"]) {
+		if (isset($_SERVER["http_proxy"]) && $_SERVER["http_proxy"]) {
 			[$ip, $port] = explode(":", $_SERVER["http_proxy"]);
 			$socket->configProxy($ip, (int)($port ?? 3128));
 		}
