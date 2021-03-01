@@ -26,14 +26,14 @@ jobs:
         with:
           php_version: 7.3
           version: 2
-        run: composer install --prefer-dist
+          run: composer install --prefer-dist
 
       - name: Run PHPUnit (7.3)
         with:
           php_version: 7.3
-        run: php vendor/bin/phpunit
+          run: php vendor/bin/phpunit
 
       - name: Run PHPUnit (7.4)
         with:
           php_version: 7.4
-        run: php vendor/bin/phpunit
+          run: php vendor/bin/phpunit
