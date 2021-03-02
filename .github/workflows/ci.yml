@@ -48,6 +48,7 @@ jobs:
           'host' => 'mysql',
           'login' => 'root',
           'password' => 'password',
+          'port' => '33306',
           ),
           'pgsql' => array(
           'datasource' => 'Database/Postgres',
@@ -133,7 +134,7 @@ jobs:
         run: "vendors/bin/phpunit"
 
       - name: "Create MySQL databases"
-        run: "mysql -h mysql -ppassword -e 'CREATE DATABASE cakephp_test; CREATE DATABASE cakephp_test2; CREATE DATABASE cakephp_test3;'"
+        run: "mysql -h mysql --port 33306 -ppassword -e 'CREATE DATABASE cakephp_test; CREATE DATABASE cakephp_test2; CREATE DATABASE cakephp_test3;'"
 
       - name: "Run PHPUnit (MySQL)"
         env:
