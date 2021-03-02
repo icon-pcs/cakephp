@@ -562,36 +562,6 @@ class CacheTest extends CakeTestCase {
 /**
  * Test engine method.
  *
- *  Success, memcached engine.
- *
- * @return void
- */
-	public function testEngineSuccessMemcached() {
-		$this->skipIf(!class_exists('Memcached'), 'Memcached is not installed or configured properly.');
-
-		// @codingStandardsIgnoreStart
-		$socket = @fsockopen('127.0.0.1', 11211, $errno, $errstr, 1);
-		// @codingStandardsIgnoreEnd
-		$this->skipIf(!$socket, 'Memcached is not running.');
-		fclose($socket);
-
-		Cache::config('memcached', array(
-			'engine' => 'Memcached',
-			'prefix' => 'cake_',
-			'duration' => 3600
-		));
-
-		$actual = Cache::engine('memcached');
-		$this->assertInstanceOf('MemcachedEngine', $actual);
-
-		$this->assertTrue($actual->add('test_add_key', 'test data', 10));
-		$this->assertFalse($actual->add('test_add_key', 'test data', 10));
-		$this->assertTrue($actual->delete('test_add_key'));
-	}
-
-/**
- * Test engine method.
- *
  *  Failure.
  *
  * @return void
