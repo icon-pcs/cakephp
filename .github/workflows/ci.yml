@@ -45,7 +45,7 @@ jobs:
           private \$identities = array(
           'mysql' => array(
           'datasource' => 'Database/Mysql',
-          'host' => 'mysql',
+          'host' => '127.0.0.1',
           'login' => 'test',
           'password' => 'password',
           ),
