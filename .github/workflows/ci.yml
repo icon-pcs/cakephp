@@ -57,6 +57,4 @@ jobs:
         run: "mysql --host 127.0.0.1 --user root --port 33306 -ppassword -e 'CREATE DATABASE cakephp_test; CREATE DATABASE cakephp_test2; CREATE DATABASE cakephp_test3;'"
 
       - name: "Run PHPUnit (MySQL)"
-        env:
-          DB: mysql
-        run: "vendors/bin/phpunit"
+        run: "DB=mysql vendors/bin/phpunit"
