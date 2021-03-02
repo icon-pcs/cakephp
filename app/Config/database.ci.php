@@ -61,8 +61,6 @@ class DATABASE_CONFIG
 
 		$db = $_SERVER['DB'];
 
-		echo "\n\nDatabase is " . $db . "\n\n";
-
 		foreach (['default', 'test', 'test2', 'test_database_three'] as $source) {
 			$config = array_merge($this->{$source}, $identities[$db]);
 			if (is_array($config['database'])) {
