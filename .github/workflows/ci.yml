@@ -66,8 +66,8 @@ jobs:
           'database' => array(
           'default' => ':memory:',
           'test' => ':memory:',
-          'test2' => sys_get_temp_dir() . '/cakephp_test2.db',
-          'test_database_three' => sys_get_temp_dir() . '/cakephp_test3.db',
+          'test2' => '/tmp/cakephp_test2.db',
+          'test_database_three' => '/tmp/cakephp_test3.db',
           ),
           )
           );
