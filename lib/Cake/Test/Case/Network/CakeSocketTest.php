@@ -333,6 +333,11 @@ class CakeSocketTest extends CakeTestCase {
 	public function testEnableCryptoTlsV11() {
 		$this->skipIf(!defined('STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT'), 'TLS1.1 is not supported on this system');
 
+		$this->skipIf(
+			isset($_SERVER["CI"]) && $_SERVER["CI"],
+			"TLS 1.1 is deprecated and not tested in CI"
+		);
+
 		// testing on tls server
 		$this->_connectSocketToSslTls();
 		$this->assertTrue($this->Socket->enableCrypto('tlsv1_1', 'client'));
