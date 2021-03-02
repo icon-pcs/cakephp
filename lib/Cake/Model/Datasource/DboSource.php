@@ -512,6 +512,7 @@ class DboSource extends DataSource {
 			}
 			return $query;
 		} catch (PDOException $e) {
+			var_dump($sql);
 			if (isset($query->queryString)) {
 				$e->queryString = $query->queryString;
 			} else {
