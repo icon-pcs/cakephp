@@ -66,8 +66,8 @@ jobs:
           'database' => array(
           'default' => ':memory:',
           'test' => ':memory:',
-          'test2' => __DIR__ . '/../tmp/cakephp_test2.db',
-          'test_database_three' => __DIR__ . '/../tmp/cakephp_test3.db'
+          'test2' => sys_get_temp_dir() . '/cakephp_test2.db',
+          'test_database_three' => sys_get_temp_dir() . '/cakephp_test3.db',
           ),
           )
           );
@@ -126,7 +126,7 @@ jobs:
         with:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
-          extensions: mcrypt
+          extensions: mcrypt, pdo_sqlite, pdo_mysql
       - name: "Composer install"
         run: "composer install --prefer-dist"
       - name: "Run PHPUnit (SQLite)"
