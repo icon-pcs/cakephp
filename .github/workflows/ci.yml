@@ -45,7 +45,7 @@ jobs:
           private \$identities = array(
           'mysql' => array(
           'datasource' => 'Database/Mysql',
-          'host' => '127.0.0.1',
+          'host' => 'mysql',
           'login' => 'root',
           'password' => 'password',
           ),
@@ -133,7 +133,7 @@ jobs:
         run: "vendors/bin/phpunit"
 
       - name: "Create MySQL databases"
-        run: "mysql -ppassword -e 'CREATE DATABASE cakephp_test; CREATE DATABASE cakephp_test2; CREATE DATABASE cakephp_test3;'"
+        run: "mysql -h mysql -ppassword -e 'CREATE DATABASE cakephp_test; CREATE DATABASE cakephp_test2; CREATE DATABASE cakephp_test3;'"
 
       - name: "Run PHPUnit (MySQL)"
         env:
